@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ExternalLink, Send, CheckCircle2, Upload, Users } from "lucide-react";
+import { Send, CheckCircle2, Upload, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Submit = () => {
   return (
@@ -65,13 +66,16 @@ const Submit = () => {
         </div>
 
         {/* CTA */}
-        <Card className="bg-gradient-to-r from-primary to-primary-light text-white animate-scale-in" style={{ animationDelay: '0.4s' }}>
+        <Card
+          className="bg-gradient-to-r from-primary to-primary-light text-white animate-scale-in"
+          style={{ animationDelay: '0.4s' }}
+        >
           <CardContent className="pt-8 pb-8">
             <div className="text-center space-y-6">
               <div className="mx-auto w-16 h-16 rounded-full bg-white/20 flex items-center justify-center">
                 <Send className="h-8 w-8 text-white" />
               </div>
-              
+
               <div>
                 <h2 className="text-2xl font-bold mb-2">Pronto para compartilhar?</h2>
                 <p className="text-white/90 mb-6">
@@ -79,24 +83,21 @@ const Submit = () => {
                 </p>
               </div>
 
+              {/* 🔄 Alterado: leva para a página interna /enviar-pratica */}
               <Button
                 size="lg"
                 variant="secondary"
                 className="gap-2 text-lg px-8"
                 asChild
               >
-                <a
-                  href="https://forms.google.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <Link to="/enviar-pratica">
                   Acessar Formulário de Envio
-                  <ExternalLink className="h-5 w-5" />
-                </a>
+                  <Send className="h-5 w-5" />
+                </Link>
               </Button>
 
               <p className="text-sm text-white/70">
-                O formulário abrirá em uma nova aba
+                Você será direcionado para o formulário interno
               </p>
             </div>
           </CardContent>
@@ -106,7 +107,10 @@ const Submit = () => {
         <div className="mt-12 text-center text-sm text-muted-foreground">
           <p>
             Dúvidas? Entre em contato conosco através do e-mail{" "}
-            <a href="mailto:contato@deitapecerica.sp.gov.br" className="text-primary hover:underline">
+            <a
+              href="mailto:contato@deitapecerica.sp.gov.br"
+              className="text-primary hover:underline"
+            >
               contato@deitapecerica.sp.gov.br
             </a>
           </p>
@@ -117,3 +121,4 @@ const Submit = () => {
 };
 
 export default Submit;
+

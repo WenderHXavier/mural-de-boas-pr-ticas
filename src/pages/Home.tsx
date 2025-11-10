@@ -41,11 +41,11 @@ const Home = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Link to="/enviar-pratica">
-  <Button size="lg" variant="secondary" className="gap-2 text-lg px-8">
-    <Send className="h-5 w-5" />
-    Envie sua boa prática
-  </Button>
-</Link>
+                <Button size="lg" variant="secondary" className="gap-2 text-lg px-8">
+                  <Send className="h-5 w-5" />
+                  Envie sua boa prática
+                </Button>
+              </Link>
               <Link to="/practices">
                 <Button size="lg" variant="outline" className="gap-2 text-lg px-8 bg-white/10 hover:bg-white/20 border-white/30 text-white">
                   Ver todas as práticas
@@ -120,11 +120,11 @@ const Home = () => {
               Compartilhe suas iniciativas e inspire educadores de toda a região!
             </p>
            <Link to="/enviar-pratica">
-  <Button size="lg" variant="secondary" className="gap-2 text-lg px-8">
-    <Send className="h-5 w-5" />
-    Enviar minha boa prática
-  </Button>
-</Link>
+            <Button size="lg" variant="secondary" className="gap-2 text-lg px-8">
+              <Send className="h-5 w-5" />
+              Enviar minha boa prática
+            </Button>
+          </Link>
           </div>
         </div>
       </section>

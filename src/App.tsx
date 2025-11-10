@@ -10,6 +10,7 @@ import Submit from "./pages/Submit";
 import Highlights from "./pages/Highlights";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
+import EnviarPratica from "./pages/EnviarPratica";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,8 @@ const App = () => (
             <Route path="/submit" element={<Submit />} />
             <Route path="/highlights" element={<Highlights />} />
             <Route path="/about" element={<About />} />
+            <Route path="/enviar-pratica" element={<EnviarPratica />} />
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

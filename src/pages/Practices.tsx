@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,28 +28,30 @@ const Practices = () => {
     "Colaboração",
   ];
 
-  // 🧩 Busca os dados do Supabase
+  // 📦 Buscar dados do Supabase
   useEffect(() => {
     const fetchPractices = async () => {
       setLoading(true);
       const { data, error } = await supabase
         .from("praticas")
-        .select("id, titulo, descricao, autor, escola, imagem_url, data_envio")
+        .select(
+          "id, titulo, descricao, autor, escola, categoria, imagem_url, data_envio, aprovado"
+        )
+        .eq("aprovado", true) // 🔒 mostra apenas os aprovados
         .order("data_envio", { ascending: false });
 
       if (error) {
-        console.error("Erro ao buscar práticas:", error);
+        console.error("Erro ao carregar práticas:", error);
       } else {
         setPractices(data || []);
       }
-
       setLoading(false);
     };
 
     fetchPractices();
   }, []);
 
-  // 🔍 Filtros
+  // 🔍 Filtro de busca e categoria
   const filteredPractices = practices.filter((practice) => {
     const matchesSearch =
       practice.titulo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -57,7 +59,9 @@ const Practices = () => {
       practice.descricao?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesCategory =
-      !selectedCategory || selectedCategory === "Todos";
+      !selectedCategory ||
+      selectedCategory === "Todos" ||
+      practice.categoria === selectedCategory;
 
     return matchesSearch && matchesCategory;
   });
@@ -134,33 +138,32 @@ const Practices = () => {
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
                 <PracticeCard
+                  id={practice.id}
                   title={practice.titulo}
                   school={practice.escola}
-                  author={practice.autor}
+                  category={practice.categoria}
                   description={practice.descricao}
                   image={practice.imagem_url}
                 />
               </div>
             ))}
           </div>
-        ) : (
-          !loading && (
-            <div className="text-center py-16">
-              <p className="text-lg text-muted-foreground mb-4">
-                Nenhuma prática encontrada com os filtros selecionados.
-              </p>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setSearchTerm("");
-                  setSelectedCategory(null);
-                }}
-              >
-                Limpar filtros
-              </Button>
-            </div>
-          )
-        )}
+        ) : !loading ? (
+          <div className="text-center py-16">
+            <p className="text-lg text-muted-foreground mb-4">
+              Nenhuma prática encontrada com os filtros selecionados.
+            </p>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSearchTerm("");
+                setSelectedCategory(null);
+              }}
+            >
+              Limpar filtros
+            </Button>
+          </div>
+        ) : null}
       </div>
     </div>
   );

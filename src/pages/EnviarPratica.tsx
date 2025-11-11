@@ -2,7 +2,8 @@ import { useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = "https://tidqbfobizzbqwodgiel.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpZHFiZm9iaXp6YnF3b2RnaWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTM0NDYsImV4cCI6MjA3ODQyOTQ0Nn0.GLApVW55UFsrGHhRwvUyTsXyd5jNo_GSh4Kf3tkD1gM";
+const supabaseKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpZHFiZm9iaXp6YnF3b2RnaWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTM0NDYsImV4cCI6MjA3ODQyOTQ0Nn0.GLApVW55UFsrGHhRwvUyTsXyd5jNo_GSh4Kf3tkD1gM";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function EnviarPratica() {
@@ -20,6 +21,7 @@ export default function EnviarPratica() {
     const descricao = data.get("descricao") as string;
     const autor = data.get("autor") as string;
     const escola = data.get("escola") as string;
+    const categoria = data.get("categoria") as string;
 
     let imageUrl: string | null = null;
 
@@ -46,7 +48,7 @@ export default function EnviarPratica() {
         console.log("✅ Imagem enviada com sucesso:", imageUrl);
       }
 
-      // 💾 Inserção na tabela
+      // 💾 Inserção na tabela com aprovação = false
       const { data: insertData, error: insertError } = await supabase
         .from("praticas")
         .insert([
@@ -55,11 +57,13 @@ export default function EnviarPratica() {
             descricao,
             autor,
             escola,
+            categoria,
             imagem_url: imageUrl,
+            aprovado: false, // 🔒 ainda não publicado
             data_envio: new Date().toISOString(),
           },
         ])
-        .select(); // retorna o registro inserido
+        .select();
 
       if (insertError) {
         console.error("❌ Erro ao inserir registro:", insertError);
@@ -89,6 +93,7 @@ export default function EnviarPratica() {
           Envie sua Boa Prática
         </h2>
 
+        {/* Campo: Título */}
         <div>
           <label className="block mb-1 font-semibold text-gray-700">Título</label>
           <input
@@ -99,6 +104,27 @@ export default function EnviarPratica() {
           />
         </div>
 
+        {/* Campo: Categoria */}
+        <div>
+          <label className="block mb-1 font-semibold text-gray-700">
+            Categoria
+          </label>
+          <select
+            name="categoria"
+            required
+            className="w-full p-2 border border-gray-300 rounded-lg"
+          >
+            <option value="">Selecione uma categoria</option>
+            <option value="Tecnologia">Tecnologia</option>
+            <option value="Robótica">Robótica</option>
+            <option value="Sustentabilidade">Sustentabilidade</option>
+            <option value="Arte e Cultura">Arte e Cultura</option>
+            <option value="Inovação">Inovação</option>
+            <option value="Colaboração">Colaboração</option>
+          </select>
+        </div>
+
+        {/* Campo: Descrição */}
         <div>
           <label className="block mb-1 font-semibold text-gray-700">
             Descrição
@@ -110,6 +136,7 @@ export default function EnviarPratica() {
           ></textarea>
         </div>
 
+        {/* Campo: Autor */}
         <div>
           <label className="block mb-1 font-semibold text-gray-700">
             Nome do(a) Professor(a)
@@ -122,6 +149,7 @@ export default function EnviarPratica() {
           />
         </div>
 
+        {/* Campo: Escola */}
         <div>
           <label className="block mb-1 font-semibold text-gray-700">Escola</label>
           <input
@@ -131,6 +159,7 @@ export default function EnviarPratica() {
           />
         </div>
 
+        {/* Campo: Foto */}
         <div>
           <label className="block mb-1 font-semibold text-gray-700">
             Foto de destaque
@@ -143,6 +172,7 @@ export default function EnviarPratica() {
           />
         </div>
 
+        {/* Botão */}
         <button
           type="submit"
           className="w-full bg-blue-600 text-white font-semibold p-2 rounded-lg hover:bg-blue-700 transition"
@@ -150,12 +180,13 @@ export default function EnviarPratica() {
           Enviar
         </button>
 
+        {/* Status */}
         {status === "loading" && (
           <p className="text-gray-600 mt-3 text-center">⏳ Enviando...</p>
         )}
         {status === "success" && (
           <p className="text-green-600 mt-3 text-center font-semibold">
-            ✅ Envio realizado com sucesso!
+            ✅ Envio realizado com sucesso! Aguarde a aprovação para publicação.
           </p>
         )}
         {status === "error" && (

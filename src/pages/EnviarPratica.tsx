@@ -1,26 +1,40 @@
 import { useState } from "react";
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = "https://tidqbfobizzbqwodgiel.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpZHFiZm9iaXp6YnF3b2RnaWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTM0NDYsImV4cCI6MjA3ODQyOTQ0Nn0.GLApVW55UFsrGHhRwvUyTsXyd5jNo_GSh4Kf3tkD1gM";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function EnviarPratica() {
   const [status, setStatus] = useState("");
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setStatus("loading");
+
     const form = event.currentTarget;
     const data = new FormData(form);
 
-    const response = await fetch("https://formspree.io/f/YOUR_FORM_ID", {
-      method: "POST",
-      body: data,
-      headers: {
-        Accept: "application/json",
-      },
-    });
+    const titulo = data.get("titulo") as string;
+    const descricao = data.get("descricao") as string;
+    const autor = data.get("autor") as string;
+    const escola = data.get("escola") as string;
 
-    if (response.ok) {
+    const { error } = await supabase.from("praticas").insert([
+      {
+        titulo,
+        descricao,
+        autor,
+        escola,
+      },
+    ]);
+
+    if (error) {
+      console.error(error);
+      setStatus("error");
+    } else {
       setStatus("success");
       form.reset();
-    } else {
-      setStatus("error");
     }
   };
 
@@ -36,72 +50,46 @@ export default function EnviarPratica() {
 
         <div>
           <label className="block mb-1 font-semibold text-gray-700">
-            Nome da Escola
+            Título
+          </label>
+          <input
+            type="text"
+            name="titulo"
+            required
+            className="w-full p-2 border border-gray-300 rounded-lg"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-1 font-semibold text-gray-700">
+            Descrição
+          </label>
+          <textarea
+            name="descricao"
+            required
+            className="w-full p-2 border border-gray-300 rounded-lg"
+          ></textarea>
+        </div>
+
+        <div>
+          <label className="block mb-1 font-semibold text-gray-700">
+            Nome do(a) Professor(a)
+          </label>
+          <input
+            type="text"
+            name="autor"
+            required
+            className="w-full p-2 border border-gray-300 rounded-lg"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-1 font-semibold text-gray-700">
+            Escola
           </label>
           <input
             type="text"
             name="escola"
-            required
-            className="w-full p-2 border border-gray-300 rounded-lg"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1 font-semibold text-gray-700">
-            Categoria
-          </label>
-          <input
-            type="text"
-            name="categoria"
-            required
-            className="w-full p-2 border border-gray-300 rounded-lg"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1 font-semibold text-gray-700">
-            Descrição breve (máx. 200 caracteres)
-          </label>
-          <textarea
-            name="descricao_breve"
-            maxLength={200}
-            required
-            className="w-full p-2 border border-gray-300 rounded-lg"
-          ></textarea>
-        </div>
-
-        <div>
-          <label className="block mb-1 font-semibold text-gray-700">
-            Descrição completa
-          </label>
-          <textarea
-            name="descricao_completa"
-            required
-            className="w-full p-2 border border-gray-300 rounded-lg"
-          ></textarea>
-        </div>
-
-        <div>
-          <label className="block mb-1 font-semibold text-gray-700">
-            Foto de destaque
-          </label>
-          <input
-            type="file"
-            name="foto"
-            accept="image/*"
-            required
-            className="w-full p-2 border border-gray-300 rounded-lg"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1 font-semibold text-gray-700">
-            Nome do Professor(a)
-          </label>
-          <input
-            type="text"
-            name="professor"
-            required
             className="w-full p-2 border border-gray-300 rounded-lg"
           />
         </div>
@@ -113,6 +101,9 @@ export default function EnviarPratica() {
           Enviar
         </button>
 
+        {status === "loading" && (
+          <p className="text-gray-600 mt-3 text-center">⏳ Enviando...</p>
+        )}
         {status === "success" && (
           <p className="text-green-600 mt-3 text-center font-semibold">
             ✅ Envio realizado com sucesso!
@@ -127,3 +118,4 @@ export default function EnviarPratica() {
     </div>
   );
 }
+

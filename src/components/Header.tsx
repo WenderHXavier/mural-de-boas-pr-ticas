@@ -24,7 +24,7 @@ const Header = () => {
           </div>
           <div className="hidden md:block">
             <h1 className="text-lg font-bold leading-tight">Mural de Boas Práticas</h1>
-            <p className="text-xs text-muted-foreground">DE Itapecerica da Serra</p>
+            <p className="text-xs text-muted-foreground">URE Itapecerica da Serra</p>
           </div>
         </Link>
 

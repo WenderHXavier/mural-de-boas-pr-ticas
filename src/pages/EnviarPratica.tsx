@@ -7,6 +7,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function EnviarPratica() {
   const [status, setStatus] = useState("");
+  const [file, setFile] = useState<File | null>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -20,12 +21,36 @@ export default function EnviarPratica() {
     const autor = data.get("autor") as string;
     const escola = data.get("escola") as string;
 
+    let imageUrl = null;
+
+    // 📸 Se o usuário enviou uma imagem, faz upload no Supabase Storage
+    if (file) {
+      const fileName = `${Date.now()}-${file.name}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("imagens-praticas")
+        .upload(fileName, file);
+
+      if (uploadError) {
+        console.error(uploadError);
+        setStatus("error");
+        return;
+      }
+
+      // Pega a URL pública
+      const { data: publicUrlData } = supabase.storage
+        .from("imagens-praticas")
+        .getPublicUrl(fileName);
+      imageUrl = publicUrlData.publicUrl;
+    }
+
+    // 💾 Salva os dados na tabela
     const { error } = await supabase.from("praticas").insert([
       {
         titulo,
         descricao,
         autor,
         escola,
+        image_url: imageUrl,
       },
     ]);
 
@@ -35,6 +60,7 @@ export default function EnviarPratica() {
     } else {
       setStatus("success");
       form.reset();
+      setFile(null);
     }
   };
 
@@ -94,6 +120,18 @@ export default function EnviarPratica() {
           />
         </div>
 
+        <div>
+          <label className="block mb-1 font-semibold text-gray-700">
+            Foto de destaque
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            className="w-full p-2 border border-gray-300 rounded-lg"
+          />
+        </div>
+
         <button
           type="submit"
           className="w-full bg-blue-600 text-white font-semibold p-2 rounded-lg hover:bg-blue-700 transition"
@@ -118,4 +156,3 @@ export default function EnviarPratica() {
     </div>
   );
 }
-

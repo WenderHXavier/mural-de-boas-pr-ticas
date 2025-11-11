@@ -56,7 +56,7 @@ export default function EnviarPratica() {
             descricao,
             autor,
             escola,
-            image_url: imageUrl,
+            imagem_url: imageUrl,
             data_envio: new Date().toISOString(),
           },
         ])

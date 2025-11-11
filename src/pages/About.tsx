@@ -125,7 +125,7 @@ const About = () => {
         {/* Contact Info */}
         <div className="mt-12 text-center text-muted-foreground">
           <p className="mb-2">
-            <strong>Diretoria de Ensino – Região de Itapecerica da Serra</strong>
+            <strong>Unidade Regional de Ensino – Região de Itapecerica da Serra</strong>
           </p>
           <p>
             Para mais informações:{" "}

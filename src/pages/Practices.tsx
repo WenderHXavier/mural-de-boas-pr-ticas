@@ -1,25 +1,63 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
 import PracticeCard from "@/components/PracticeCard";
-import { mockPractices } from "@/data/mockPractices";
+
+// 🔗 Conexão com o Supabase
+const supabaseUrl = "https://tidqbfobizzbqwodgiel.supabase.co";
+const supabaseKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpZHFiZm9iaXp6YnF3b2RnaWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTM0NDYsImV4cCI6MjA3ODQyOTQ0Nn0.GLApVW55UFsrGHhRwvUyTsXyd5jNo_GSh4Kf3tkD1gM";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const Practices = () => {
+  const [practices, setPractices] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const categories = ["Todos", "Tecnologia", "Sustentabilidade", "Robótica", "Arte e Cultura", "Inovação", "Colaboração"];
+  const categories = [
+    "Todos",
+    "Tecnologia",
+    "Sustentabilidade",
+    "Robótica",
+    "Arte e Cultura",
+    "Inovação",
+    "Colaboração",
+  ];
 
-  const filteredPractices = mockPractices.filter((practice) => {
+  // 🧩 Busca os dados do Supabase
+  useEffect(() => {
+    const fetchPractices = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("praticas")
+        .select("id, titulo, descricao, autor, escola, imagem_url, data_envio")
+        .order("data_envio", { ascending: false });
+
+      if (error) {
+        console.error("Erro ao buscar práticas:", error);
+      } else {
+        setPractices(data || []);
+      }
+
+      setLoading(false);
+    };
+
+    fetchPractices();
+  }, []);
+
+  // 🔍 Filtros
+  const filteredPractices = practices.filter((practice) => {
     const matchesSearch =
-      practice.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      practice.school.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      practice.description.toLowerCase().includes(searchTerm.toLowerCase());
+      practice.titulo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      practice.escola?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      practice.descricao?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesCategory =
-      !selectedCategory || selectedCategory === "Todos" || practice.category === selectedCategory;
+      !selectedCategory || selectedCategory === "Todos";
 
     return matchesSearch && matchesCategory;
   });
@@ -52,9 +90,16 @@ const Practices = () => {
             {categories.map((category) => (
               <Button
                 key={category}
-                variant={selectedCategory === category || (!selectedCategory && category === "Todos") ? "default" : "outline"}
+                variant={
+                  selectedCategory === category ||
+                  (!selectedCategory && category === "Todos")
+                    ? "default"
+                    : "outline"
+                }
                 size="sm"
-                onClick={() => setSelectedCategory(category === "Todos" ? null : category)}
+                onClick={() =>
+                  setSelectedCategory(category === "Todos" ? null : category)
+                }
               >
                 {category}
               </Button>
@@ -63,39 +108,58 @@ const Practices = () => {
         </div>
 
         {/* Results Count */}
-        <div className="mb-6">
-          <p className="text-sm text-muted-foreground">
-            Mostrando {filteredPractices.length} {filteredPractices.length === 1 ? 'prática' : 'práticas'}
-            {selectedCategory && selectedCategory !== "Todos" && (
-              <Badge variant="secondary" className="ml-2">{selectedCategory}</Badge>
-            )}
-          </p>
+        <div className="mb-6 text-center">
+          {loading ? (
+            <p className="text-muted-foreground">Carregando práticas...</p>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Mostrando {filteredPractices.length}{" "}
+              {filteredPractices.length === 1 ? "prática" : "práticas"}
+              {selectedCategory && selectedCategory !== "Todos" && (
+                <Badge variant="secondary" className="ml-2">
+                  {selectedCategory}
+                </Badge>
+              )}
+            </p>
+          )}
         </div>
 
         {/* Practices Grid */}
-        {filteredPractices.length > 0 ? (
+        {!loading && filteredPractices.length > 0 ? (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {filteredPractices.map((practice, index) => (
-              <div key={practice.id} className="animate-scale-in" style={{ animationDelay: `${index * 0.05}s` }}>
-                <PracticeCard {...practice} />
+              <div
+                key={practice.id}
+                className="animate-scale-in"
+                style={{ animationDelay: `${index * 0.05}s` }}
+              >
+                <PracticeCard
+                  title={practice.titulo}
+                  school={practice.escola}
+                  author={practice.autor}
+                  description={practice.descricao}
+                  image={practice.imagem_url}
+                />
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-16">
-            <p className="text-lg text-muted-foreground mb-4">
-              Nenhuma prática encontrada com os filtros selecionados.
-            </p>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setSearchTerm("");
-                setSelectedCategory(null);
-              }}
-            >
-              Limpar filtros
-            </Button>
-          </div>
+          !loading && (
+            <div className="text-center py-16">
+              <p className="text-lg text-muted-foreground mb-4">
+                Nenhuma prática encontrada com os filtros selecionados.
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedCategory(null);
+                }}
+              >
+                Limpar filtros
+              </Button>
+            </div>
+          )
         )}
       </div>
     </div>

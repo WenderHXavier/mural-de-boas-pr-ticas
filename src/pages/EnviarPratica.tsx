@@ -124,17 +124,18 @@ export default function EnviarPratica() {
           </select>
         </div>
 
-        {/* Campo: Descrição */}
-        <div>
-          <label className="block mb-1 font-semibold text-gray-700">
-            Descrição
-          </label>
-          <textarea
-            name="descricao"
-            required
-            className="w-full p-2 border border-gray-300 rounded-lg"
-          ></textarea>
-        </div>
+       {/* Campo: Nome dos alunos e descrição */}
+<div>
+  <label className="block mb-1 font-semibold text-gray-700">
+    Nome dos alunos e descrição da prática
+  </label>
+  <textarea
+    name="descricao"
+    required
+    placeholder="Digite os nomes dos alunos e um breve resumo da prática..."
+    className="w-full p-2 border border-gray-300 rounded-lg"
+  ></textarea>
+</div>
 
         {/* Campo: Autor */}
         <div>

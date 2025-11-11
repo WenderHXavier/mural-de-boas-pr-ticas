@@ -41,7 +41,7 @@ const About = () => {
           <CardContent className="pt-8 pb-8">
             <div className="prose prose-lg max-w-none">
               <p className="text-lg leading-relaxed mb-6">
-                O <strong>Mural de Boas Práticas</strong> é uma iniciativa da Unidade Regiuonal de Ensino de 
+                O <strong>Mural de Boas Práticas</strong> é uma iniciativa da Unidade Regional de Ensino de 
                 Itapecerica da Serra criada para promover e compartilhar as experiências educacionais 
                 mais inovadoras e inspiradoras das escolas da nossa região.
               </p>

@@ -71,7 +71,7 @@ const Practices = () => {
         <div className="text-center mb-12 animate-fade-in">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Boas Práticas</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Explore as iniciativas inovadoras das escolas da nossa região — porque em Itapecerica da Serra, a educação é feita com carinho e inspiração! 💡✨
+            Explore as iniciativas inovadoras das escolas da nossa região — em Itapecerica da Serra, a educação é feita com carinho e inspiração! 💡✨
           </p>
         </div>
 

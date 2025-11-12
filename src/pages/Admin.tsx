@@ -18,7 +18,7 @@ export default function Admin() {
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
 
-  // Senha simples — pode alterar aqui
+  // Senha simples — altere aqui se quiser
   const PASSWORD = "ure2025";
 
   // Login simples
@@ -30,7 +30,7 @@ export default function Admin() {
     }
   };
 
-  // Carregar práticas
+  // Buscar práticas
   const fetchPractices = async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -46,7 +46,7 @@ export default function Admin() {
     if (authorized) fetchPractices();
   }, [authorized]);
 
-  // Funções de ação
+  // Funções administrativas
   const handleApprove = async (id: string, aprovado: boolean) => {
     setUpdating(true);
     const { error } = await supabase
@@ -176,7 +176,4 @@ export default function Admin() {
       </div>
     </div>
   );
-}
-export default function Admin() {
-  // ...
 }

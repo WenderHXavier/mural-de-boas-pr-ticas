@@ -23,25 +23,30 @@ const Practices = () => {
 
   // 📦 Buscar dados do proxy (Vercel → Supabase)
   useEffect(() => {
-    const fetchPractices = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch("/api/praticas");
-        if (!response.ok) throw new Error("Erro ao buscar práticas");
+  const fetchPractices = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/praticas");
+      if (!response.ok) throw new Error("Erro ao buscar práticas");
 
-        const data = await response.json();
-        // Filtra apenas práticas aprovadas
-        const praticasFiltradas = data.filter((p: any) => p.aprovado === true);
+      const data = await response.json();
 
-        setPractices(praticasFiltradas);
-      } catch (error) {
-        console.error("Erro ao carregar práticas:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      // 🔄 Ordena por data_envio (mais recentes primeiro)
+      const sortedData = data
+        .filter((item: any) => item.aprovado === true)
+        .sort(
+          (a: any, b: any) =>
+            new Date(b.data_envio).getTime() - new Date(a.data_envio).getTime()
+        );
 
-    fetchPractices();
+      setPractices(sortedData);
+    } catch (error) {
+      console.error("Erro ao carregar práticas:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchPractices();
   }, []);
 
   // 🔍 Filtro de busca e categoria

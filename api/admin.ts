@@ -11,13 +11,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (req.method === "OPTIONS") return res.status(200).end();
 
-  const { id, action } = req.body;
-
-  if (!id || !action) {
-    return res.status(400).json({ error: "Parâmetros inválidos" });
-  }
-
   try {
+    // ⚙️ Corrige problema com req.body sendo string
+    const body =
+      typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+
+    const { id, action } = body || {};
+
+    if (!id || !action) {
+      return res.status(400).json({ error: "Parâmetros inválidos" });
+    }
+
+    console.log("🔹 Ação recebida:", action, "para o ID:", id);
+
     let updateData = {};
 
     switch (action) {
@@ -44,10 +50,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             },
           }
         );
-        return res.status(deleteResponse.status).end();
+        if (!deleteResponse.ok) {
+          const text = await deleteResponse.text();
+          throw new Error(text);
+        }
+        return res.status(200).json({ success: true });
     }
 
-    // Executa atualização no Supabase
+    // Atualização (PATCH)
     const response = await fetch(`${SUPABASE_URL}/rest/v1/praticas?id=eq.${id}`, {
       method: "PATCH",
       headers: {
@@ -66,7 +76,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const result = await response.json();
     res.status(200).json(result);
   } catch (err: any) {
-    console.error("Erro no proxy admin:", err);
-    res.status(500).json({ error: err.message || "Erro interno" });
+    console.error("❌ Erro interno no proxy admin:", err);
+    res.status(500).json({
+      error: "Erro interno no servidor",
+      details: err.message || err.toString(),
+    });
   }
 }

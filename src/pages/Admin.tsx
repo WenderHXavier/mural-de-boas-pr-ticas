@@ -2,13 +2,21 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Star, Trash2, Loader2, Lock, Image } from "lucide-react";
+import {
+  CheckCircle,
+  Star,
+  Trash2,
+  Loader2,
+  Lock,
+  Image,
+} from "lucide-react";
 
 export default function Admin() {
   const [authorized, setAuthorized] = useState(false);
   const [password, setPassword] = useState("");
   const [practices, setPractices] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [updating, setUpdating] = useState(false);
 
   const PASSWORD = "ure2025";
 
@@ -20,6 +28,7 @@ export default function Admin() {
     }
   };
 
+  // 🔄 Busca todas as práticas
   const fetchPractices = async () => {
     setLoading(true);
     try {
@@ -39,6 +48,40 @@ export default function Admin() {
     if (authorized) fetchPractices();
   }, [authorized]);
 
+  // ⚙️ Funções de ação via proxy
+  const handleApprove = async (id: string, aprovado: boolean) => {
+    await sendAction(id, aprovado ? "reprovar" : "aprovar");
+  };
+
+  const handleHighlight = async (id: string, destaque: boolean) => {
+    await sendAction(id, destaque ? "removerDestaque" : "destaque");
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir esta prática?")) return;
+    await sendAction(id, "deletar");
+  };
+
+  // 📡 Função genérica para enviar ações
+  const sendAction = async (id: string, action: string) => {
+    setUpdating(true);
+    try {
+      const res = await fetch("/api/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, action }),
+      });
+
+      if (!res.ok) throw new Error("Erro ao executar ação");
+      await fetchPractices();
+    } catch (err) {
+      console.error("❌ Erro ao enviar ação:", err);
+      alert("Erro ao realizar a ação. Veja o console para detalhes.");
+    }
+    setUpdating(false);
+  };
+
+  // 🔐 Tela de login
   if (!authorized) {
     return (
       <div className="min-h-screen flex flex-col justify-center items-center bg-muted/30">
@@ -64,6 +107,7 @@ export default function Admin() {
     );
   }
 
+  // 🧭 Painel principal
   return (
     <div className="min-h-screen bg-gray-50 py-10">
       <div className="container">
@@ -110,20 +154,51 @@ export default function Admin() {
                       </div>
                     </div>
 
-                    {/* Botões (apenas visuais) */}
-                    <div className="flex gap-2 mt-4">
-                      <Button size="sm" variant="outline" disabled>
-                        <CheckCircle className="h-4 w-4" />
-                        <span className="ml-1">Aprovar</span>
+                    {/* Botões */}
+                    <div className="flex gap-2 mt-4 flex-wrap">
+                      <Button
+                        size="sm"
+                        variant={p.aprovado ? "default" : "outline"}
+                        onClick={() => handleApprove(p.id, p.aprovado)}
+                        disabled={updating}
+                      >
+                        {updating ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <CheckCircle className="h-4 w-4" />
+                        )}
+                        <span className="ml-1">
+                          {p.aprovado ? "Reprovar" : "Aprovar"}
+                        </span>
                       </Button>
 
-                      <Button size="sm" variant="outline" disabled>
-                        <Star className="h-4 w-4" />
-                        <span className="ml-1">Destaque</span>
+                      <Button
+                        size="sm"
+                        variant={p.destaque ? "secondary" : "outline"}
+                        onClick={() => handleHighlight(p.id, p.destaque)}
+                        disabled={updating}
+                      >
+                        {updating ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Star className="h-4 w-4" />
+                        )}
+                        <span className="ml-1">
+                          {p.destaque ? "Remover Destaque" : "Destaque"}
+                        </span>
                       </Button>
 
-                      <Button size="sm" variant="destructive" disabled>
-                        <Trash2 className="h-4 w-4" />
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDelete(p.id)}
+                        disabled={updating}
+                      >
+                        {updating ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-4 w-4" />
+                        )}
                       </Button>
                     </div>
                   </div>

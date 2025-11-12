@@ -30,6 +30,8 @@ const App = () => (
             <Route path="/highlights" element={<Highlights />} />
             <Route path="/about" element={<About />} />
             <Route path="/enviar-pratica" element={<EnviarPratica />} />
+            <Route path="/admin" element={<admin />} />
+
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

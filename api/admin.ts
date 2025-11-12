@@ -5,39 +5,25 @@ const SUPABASE_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpZHFiZm9iaXp6YnF3b2RnaWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTM0NDYsImV4cCI6MjA3ODQyOTQ0Nn0.GLApVW55UFsrGHhRwvUyTsXyd5jNo_GSh4Kf3tkD1gM";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") return res.status(200).end();
+  if (req.method !== "POST")
+    return res.status(405).json({ error: "Método não permitido" });
+
   try {
-    // 🧭 Configura CORS
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-    if (req.method === "OPTIONS") return res.status(200).end();
-
-    // ✅ Garante parsing seguro do body
-    let body: any;
-    try {
-      body =
-        typeof req.body === "string"
-          ? JSON.parse(req.body)
-          : req.body || {};
-    } catch (err) {
-      console.error("❌ Erro ao parsear body:", err);
-      return res.status(400).json({ error: "Body inválido" });
-    }
-
-    const { id, action } = body;
+    const { id, action } = req.body;
 
     if (!id || !action) {
-      console.warn("⚠️ Parâmetros inválidos recebidos:", body);
       return res.status(400).json({ error: "Parâmetros inválidos" });
     }
 
-    console.log(`🔹 Ação recebida: ${action} | ID: ${id}`);
-
+    let updateData: Record<string, any> | null = null;
     let method = "PATCH";
-    let updateData: Record<string, any> = {};
+    let url = `${SUPABASE_URL}/rest/v1/praticas?id=eq.${id}`;
 
-    // 🔀 Define ação
     switch (action) {
       case "aprovar":
         updateData = { aprovado: true };
@@ -55,12 +41,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         method = "DELETE";
         break;
       default:
-        return res.status(400).json({ error: "Ação inválida" });
+        return res.status(400).json({ error: "Ação desconhecida" });
     }
 
-    const url = `${SUPABASE_URL}/rest/v1/praticas?id=eq.${id}`;
-
-    const fetchOptions: any = {
+    const options: RequestInit = {
       method,
       headers: {
         "Content-Type": "application/json",
@@ -68,30 +52,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         Authorization: `Bearer ${SUPABASE_KEY}`,
         Prefer: "return=representation",
       },
+      body: updateData ? JSON.stringify(updateData) : undefined,
     };
 
-    if (method !== "DELETE") {
-      fetchOptions.body = JSON.stringify(updateData);
-    }
-
-    console.log("📡 Enviando para Supabase:", { url, method, updateData });
-
-    const response = await fetch(url, fetchOptions);
-
-    const text = await response.text();
-    console.log("📥 Resposta do Supabase:", text);
+    const response = await fetch(url, options);
 
     if (!response.ok) {
-      throw new Error(`Erro do Supabase: ${text}`);
+      const errorText = await response.text();
+      console.error("❌ Erro do Supabase:", errorText);
+      return res.status(response.status).json({ error: "Erro no Supabase", details: errorText });
     }
 
-    const result = text ? JSON.parse(text) : { success: true };
-    return res.status(200).json(result);
+    const result = await response.json();
+    console.log(`✅ Ação '${action}' aplicada no registro ${id}`, result);
+
+    return res.status(200).json({ success: true, action, result });
   } catch (err: any) {
-    console.error("💥 Erro interno no /api/admin:", err);
-    return res.status(500).json({
-      error: "Erro interno no servidor",
-      details: err.message || err.toString(),
-    });
+    console.error("⚠️ Erro interno:", err);
+    return res.status(500).json({ error: "Erro interno do servidor", details: err.message });
   }
 }

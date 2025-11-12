@@ -1,33 +1,29 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { createClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, Users, Lightbulb, Send } from "lucide-react";
 import PracticeCard from "@/components/PracticeCard";
 
-// 🔗 Supabase client
-const supabaseUrl = "https://tidqbfobizzbqwodgiel.supabase.co";
-const supabaseKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpZHFiZm9iaXp6YnF3b2RnaWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTM0NDYsImV4cCI6MjA3ODQyOTQ0Nn0.GLApVW55UFsrGHhRwvUyTsXyd5jNo_GSh4Kf3tkD1gM";
-const supabase = createClient(supabaseUrl, supabaseKey);
-
 const Home = () => {
   const [practices, setPractices] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchFeatured = async () => {
-      const { data, error } = await supabase
-        .from("praticas")
-        .select("id, titulo, descricao, escola, categoria, imagem_url, destaque")
-        .eq("destaque", true)
-        .order("data_envio", { ascending: false })
-        .limit(3);
+      try {
+        setLoading(true);
+        // 🔁 Busca via proxy para funcionar na rede intragov
+        const response = await fetch("/api/praticas?destaque=true");
+        if (!response.ok) throw new Error("Erro ao buscar destaques");
 
-      if (error) {
+        const data = await response.json();
+        // Exibe apenas os 3 primeiros
+        setPractices(data.slice(0, 3) || []);
+      } catch (error) {
         console.error("Erro ao carregar destaques:", error);
-      } else {
-        setPractices(data || []);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -140,31 +136,35 @@ const Home = () => {
             </Link>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {practices.length > 0 ? (
-              practices.map((practice, index) => (
-                <div
-                  key={practice.id}
-                  className="animate-scale-in"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <PracticeCard
-                    id={practice.id}
-                    title={practice.titulo}
-                    school={practice.escola}
-                    category={practice.categoria}
-                    description={practice.descricao}
-                    image={practice.imagem_url}
-                    featured={true}
-                  />
-                </div>
-              ))
-            ) : (
-              <p className="text-center text-muted-foreground col-span-full">
-                Nenhum destaque disponível no momento.
-              </p>
-            )}
-          </div>
+          {loading ? (
+            <p className="text-center text-muted-foreground">Carregando...</p>
+          ) : (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {practices.length > 0 ? (
+                practices.map((practice, index) => (
+                  <div
+                    key={practice.id}
+                    className="animate-scale-in"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <PracticeCard
+                      id={practice.id}
+                      title={practice.titulo}
+                      school={practice.escola}
+                      category={practice.categoria}
+                      description={practice.descricao}
+                      image={practice.imagem_url}
+                      featured={true}
+                    />
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-muted-foreground col-span-full">
+                  Nenhum destaque disponível no momento.
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </section>
 

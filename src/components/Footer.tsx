@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { BookOpen, Mail } from "lucide-react";
+import { BookOpen, Mail, Instagram } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -8,50 +8,88 @@ const Footer = () => {
     <footer className="border-t bg-muted/30 mt-20">
       <div className="container py-12">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-          {/* Logo and Description */}
+          {/* 🔹 Logo e Descrição */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary-light">
-                <BookOpen className="h-6 w-6 text-white" />
+            <div className="flex items-center gap-3">
+              {/* Logos lado a lado */}
+              <div className="flex items-center gap-2">
+                <img
+                  src="/logo-see.png"
+                  alt="Logo SEE-SP"
+                  className="h-10 w-auto"
+                />
+                <img
+                  src="/logo-ure-itapecerica.png"
+                  alt="Logo URE Itapecerica da Serra"
+                  className="h-10 w-auto"
+                />
               </div>
               <div>
                 <h3 className="font-bold">Mural de Boas Práticas</h3>
-                <p className="text-xs text-muted-foreground">URE Itapecerica da Serra</p>
+                <p className="text-xs text-muted-foreground">
+                  URE Itapecerica da Serra
+                </p>
               </div>
             </div>
+
             <p className="text-sm text-muted-foreground">
               Compartilhando inovação e inspiração nas escolas da nossa região.
             </p>
+
+            {/* 🔹 Instagram */}
+            <div className="flex items-center gap-2 mt-2">
+              <a
+                href="https://instagram.com/ureitapecerica"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Instagram className="h-5 w-5" />
+                <span>@ureitapecerica</span>
+              </a>
+            </div>
           </div>
 
-          {/* Quick Links */}
+          {/* 🔹 Links Rápidos */}
           <div>
             <h4 className="font-semibold mb-4">Links Rápidos</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Início
                 </Link>
               </li>
               <li>
-                <Link to="/practices" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/practices"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Boas Práticas
                 </Link>
               </li>
               <li>
-                <Link to="/submit" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/submit"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Enviar Prática
                 </Link>
               </li>
               <li>
-                <Link to="/highlights" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  to="/highlights"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Destaques
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Resources */}
+          {/* 🔹 Recursos */}
           <div>
             <h4 className="font-semibold mb-4">Recursos</h4>
             <ul className="space-y-2 text-sm">
@@ -78,6 +116,8 @@ const Footer = () => {
               <li>
                 <a
                   href="https://padlet.com/wellingtonsantos02/n-cleo-pedag-gico-npe-derits-2024-2025-aln1ejdxbztywah8"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Padlet Oficial
@@ -86,15 +126,17 @@ const Footer = () => {
               <li>
                 <a
                   href="https://deitapecerica.educacao.sp.gov.br/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Site institucional
+                  Site Institucional
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Contact */}
+          {/* 🔹 Contato */}
           <div>
             <h4 className="font-semibold mb-4">Contato</h4>
             <div className="space-y-2 text-sm text-muted-foreground">
@@ -106,8 +148,12 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* 🔹 Créditos finais */}
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© {currentYear} Unidade Regional de Ensino – Região de Itapecerica da Serra. Todos os direitos reservados.</p>
+          <p>
+            © {currentYear} Unidade Regional de Ensino – Região de Itapecerica da Serra.
+            Todos os direitos reservados.
+          </p>
         </div>
       </div>
     </footer>

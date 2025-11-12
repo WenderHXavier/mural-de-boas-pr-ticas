@@ -1,16 +1,9 @@
 import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
 import PracticeCard from "@/components/PracticeCard";
-
-// 🔗 Conexão com o Supabase
-const supabaseUrl = "https://tidqbfobizzbqwodgiel.supabase.co";
-const supabaseKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpZHFiZm9iaXp6YnF3b2RnaWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTM0NDYsImV4cCI6MjA3ODQyOTQ0Nn0.GLApVW55UFsrGHhRwvUyTsXyd5jNo_GSh4Kf3tkD1gM";
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const Practices = () => {
   const [practices, setPractices] = useState<any[]>([]);
@@ -28,24 +21,24 @@ const Practices = () => {
     "Colaboração",
   ];
 
-  // 📦 Buscar dados do Supabase
+  // 📦 Buscar dados do proxy (Vercel → Supabase)
   useEffect(() => {
     const fetchPractices = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("praticas")
-        .select(
-          "id, titulo, descricao, autor, escola, categoria, imagem_url, data_envio, aprovado"
-        )
-        .eq("aprovado", true) // 🔒 mostra apenas os aprovados
-        .order("data_envio", { ascending: false });
+      try {
+        const response = await fetch("/api/praticas");
+        if (!response.ok) throw new Error("Erro ao buscar práticas");
 
-      if (error) {
+        const data = await response.json();
+        // Filtra apenas práticas aprovadas
+        const praticasFiltradas = data.filter((p: any) => p.aprovado === true);
+
+        setPractices(praticasFiltradas);
+      } catch (error) {
         console.error("Erro ao carregar práticas:", error);
-      } else {
-        setPractices(data || []);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchPractices();

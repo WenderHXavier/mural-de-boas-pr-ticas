@@ -37,7 +37,7 @@ const Home = () => {
               Boas Práticas em Ação!
             </h1>
             <p className="text-xl md:text-2xl text-white/90">
-              Conheça as iniciativas que estão transformando a educação nas escolas da Diretoria de Ensino de Itapecerica da Serra
+              Conheça as iniciativas que estão transformando a educação nas escolas da <strong>URE Itapecerica da Serra</strong>
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Link to="/enviar-pratica">

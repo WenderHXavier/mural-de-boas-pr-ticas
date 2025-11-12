@@ -22,6 +22,14 @@ const PracticeCard = ({
   date,
   featured = false,
 }: PracticeCardProps) => {
+  // Se houver imagem, ajusta o caminho para passar pelo proxy /api/imagem
+  const imageUrl =
+    image && image.includes("/imagens-praticas/")
+      ? `/api/imagem?path=${encodeURIComponent(
+          image.split("/imagens-praticas/")[1]
+        )}`
+      : null;
+
   return (
     <Card
       className={`overflow-hidden card-hover h-full flex flex-col ${
@@ -35,9 +43,9 @@ const PracticeCard = ({
       )}
 
       <div className="aspect-video w-full overflow-hidden bg-muted flex items-center justify-center">
-        {image ? (
+        {imageUrl ? (
           <img
-            src={image}
+            src={imageUrl}
             alt={title}
             className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
           />
@@ -71,7 +79,9 @@ const PracticeCard = ({
       <CardFooter className="flex items-center justify-between text-xs text-muted-foreground border-t pt-4">
         <div className="flex items-center gap-1">
           <Building2 className="h-3 w-3" />
-          <span className="line-clamp-1">{school || "Escola não informada"}</span>
+          <span className="line-clamp-1">
+            {school || "Escola não informada"}
+          </span>
         </div>
         {date && (
           <div className="flex items-center gap-1">
@@ -85,4 +95,3 @@ const PracticeCard = ({
 };
 
 export default PracticeCard;
-

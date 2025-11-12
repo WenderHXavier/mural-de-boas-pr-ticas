@@ -1,27 +1,17 @@
 import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Star, Trash2, Loader2, Lock } from "lucide-react";
-
-// 🔗 Supabase client
-const supabaseUrl = "https://tidqbfobizzbqwodgiel.supabase.co";
-const supabaseKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpZHFiZm9iaXp6YnF3b2RnaWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTM0NDYsImV4cCI6MjA3ODQyOTQ0Nn0.GLApVW55UFsrGHhRwvUyTsXyd5jNo_GSh4Kf3tkD1gM";
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { CheckCircle, Star, Trash2, Loader2, Lock, Image } from "lucide-react";
 
 export default function Admin() {
   const [authorized, setAuthorized] = useState(false);
   const [password, setPassword] = useState("");
   const [practices, setPractices] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [updating, setUpdating] = useState(false);
 
-  // Senha simples — altere aqui se quiser
   const PASSWORD = "ure2025";
 
-  // Login simples
   const handleLogin = () => {
     if (password === PASSWORD) {
       setAuthorized(true);
@@ -30,15 +20,18 @@ export default function Admin() {
     }
   };
 
-  // Buscar práticas
   const fetchPractices = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("praticas")
-      .select("*")
-      .order("data_envio", { ascending: false });
-    if (error) console.error("Erro ao buscar práticas:", error);
-    else setPractices(data || []);
+    try {
+      const response = await fetch("/api/praticas");
+      if (!response.ok) throw new Error("Falha ao buscar dados");
+      const data = await response.json();
+      console.log("✅ Dados via proxy:", data);
+      setPractices(data || []);
+    } catch (err) {
+      console.error("❌ Erro ao carregar via proxy:", err);
+      alert("Erro ao carregar práticas. Tente novamente.");
+    }
     setLoading(false);
   };
 
@@ -46,39 +39,6 @@ export default function Admin() {
     if (authorized) fetchPractices();
   }, [authorized]);
 
-  // Funções administrativas
-  const handleApprove = async (id: string, aprovado: boolean) => {
-    setUpdating(true);
-    const { error } = await supabase
-      .from("praticas")
-      .update({ aprovado: !aprovado })
-      .eq("id", id);
-    if (error) alert("Erro ao atualizar: " + error.message);
-    else fetchPractices();
-    setUpdating(false);
-  };
-
-  const handleHighlight = async (id: string, destaque: boolean) => {
-    setUpdating(true);
-    const { error } = await supabase
-      .from("praticas")
-      .update({ destaque: !destaque })
-      .eq("id", id);
-    if (error) alert("Erro ao definir destaque: " + error.message);
-    else fetchPractices();
-    setUpdating(false);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir esta prática?")) return;
-    setUpdating(true);
-    const { error } = await supabase.from("praticas").delete().eq("id", id);
-    if (error) alert("Erro ao excluir: " + error.message);
-    else fetchPractices();
-    setUpdating(false);
-  };
-
-  // 🔐 Tela de login
   if (!authorized) {
     return (
       <div className="min-h-screen flex flex-col justify-center items-center bg-muted/30">
@@ -104,7 +64,6 @@ export default function Admin() {
     );
   }
 
-  // 🧭 Painel principal
   return (
     <div className="min-h-screen bg-gray-50 py-10">
       <div className="container">
@@ -117,56 +76,56 @@ export default function Admin() {
         ) : (
           <div className="grid gap-6">
             {practices.map((p) => (
-              <Card key={p.id} className="shadow-sm border">
-                <CardContent className="py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                  <div>
-                    <h3 className="font-semibold text-lg">{p.titulo}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {p.escola} • {p.autor}
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {p.aprovado && <Badge variant="default">Aprovado</Badge>}
-                      {p.destaque && <Badge variant="secondary">Destaque</Badge>}
-                    </div>
+              <Card key={p.id} className="shadow-sm border overflow-hidden">
+                <CardContent className="p-0 flex flex-col md:flex-row">
+                  {/* Imagem */}
+                  <div className="md:w-1/3 w-full bg-muted aspect-video flex items-center justify-center overflow-hidden">
+                    {p.imagem_url ? (
+                      <img
+                        src={p.imagem_url}
+                        alt={p.titulo}
+                        className="object-cover w-full h-full"
+                      />
+                    ) : (
+                      <div className="text-center text-muted-foreground p-6">
+                        <Image className="mx-auto mb-2 h-6 w-6 opacity-60" />
+                        <p className="text-sm">Sem imagem</p>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant={p.aprovado ? "outline" : "default"}
-                      onClick={() => handleApprove(p.id, p.aprovado)}
-                      disabled={updating}
-                    >
-                      {updating ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
+                  {/* Conteúdo */}
+                  <div className="flex-1 p-6 flex flex-col justify-between">
+                    <div>
+                      <h3 className="font-semibold text-lg">{p.titulo}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {p.escola} • {p.autor}
+                      </p>
+                      <p className="mt-2 text-sm">{p.descricao}</p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {p.aprovado && <Badge variant="default">Aprovado</Badge>}
+                        {p.destaque && (
+                          <Badge variant="secondary">Destaque</Badge>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Botões (apenas visuais) */}
+                    <div className="flex gap-2 mt-4">
+                      <Button size="sm" variant="outline" disabled>
                         <CheckCircle className="h-4 w-4" />
-                      )}
-                      <span className="ml-1">
-                        {p.aprovado ? "Reprovar" : "Aprovar"}
-                      </span>
-                    </Button>
+                        <span className="ml-1">Aprovar</span>
+                      </Button>
 
-                    <Button
-                      size="sm"
-                      variant={p.destaque ? "outline" : "secondary"}
-                      onClick={() => handleHighlight(p.id, p.destaque)}
-                      disabled={updating}
-                    >
-                      <Star className="h-4 w-4" />
-                      <span className="ml-1">
-                        {p.destaque ? "Remover Destaque" : "Destaque"}
-                      </span>
-                    </Button>
+                      <Button size="sm" variant="outline" disabled>
+                        <Star className="h-4 w-4" />
+                        <span className="ml-1">Destaque</span>
+                      </Button>
 
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => handleDelete(p.id)}
-                      disabled={updating}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                      <Button size="sm" variant="destructive" disabled>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

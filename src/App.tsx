@@ -11,8 +11,7 @@ import Highlights from "./pages/Highlights";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import EnviarPratica from "./pages/EnviarPratica";
-import admin from "@/pages/admin";
-
+import Admin from "@/pages/admin"; // 
 
 const queryClient = new QueryClient();
 
@@ -30,8 +29,7 @@ const App = () => (
             <Route path="/highlights" element={<Highlights />} />
             <Route path="/about" element={<About />} />
             <Route path="/enviar-pratica" element={<EnviarPratica />} />
-            <Route path="/admin" element={<admin />} />
-
+            <Route path="/admin" element={<Admin />} /> {/* ✅ corrigido */}
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
@@ -43,3 +41,4 @@ const App = () => (
 );
 
 export default App;
+

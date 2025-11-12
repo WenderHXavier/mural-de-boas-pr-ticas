@@ -14,14 +14,14 @@ const Footer = () => {
               {/* Logos lado a lado */}
               <div className="flex items-center gap-2">
                 <img
-                  src="/logo-see.png"
+                  src="/logo-see1.png"
                   alt="Logo SEE-SP"
-                  className="h-10 w-auto"
+                  className="h-12 w-auto"
                 />
                 <img
-                  src="/logo-ure-itapecerica.png"
+                  src="/logo-ure-itapecerica1.png"
                   alt="Logo URE Itapecerica da Serra"
-                  className="h-10 w-auto"
+                  className="h-12 w-auto"
                 />
               </div>
               <div>

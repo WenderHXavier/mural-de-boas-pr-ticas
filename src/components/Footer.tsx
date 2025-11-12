@@ -16,7 +16,7 @@ const Footer = () => {
               </div>
               <div>
                 <h3 className="font-bold">Mural de Boas Práticas</h3>
-                <p className="text-xs text-muted-foreground">DE Itapecerica da Serra</p>
+                <p className="text-xs text-muted-foreground">URE Itapecerica da Serra</p>
               </div>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -57,38 +57,38 @@ const Footer = () => {
             <ul className="space-y-2 text-sm">
               <li>
                 <a
-                  href="https://www.alura.com.br"
+                  href="https://sites.google.com/view/tecnologiaderits/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Plataforma Alura
+                  Materiais de Tecnologia e Robótica
                 </a>
               </li>
               <li>
                 <a
-                  href="https://www.obmep.org.br"
+                  href="https://sites.google.com/view/npe-derits/p%C3%A1gina-inicial"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  OBMEP
+                  SITE DA EQUIPE DE ESPECIALISTAS EM CURRÍCULO UREITS
                 </a>
               </li>
               <li>
                 <a
-                  href="#"
+                  href="https://padlet.com/wellingtonsantos02/n-cleo-pedag-gico-npe-derits-2024-2025-aln1ejdxbztywah8"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Robótica Educacional
+                  PADLET OFICIAL UREITS
                 </a>
               </li>
               <li>
                 <a
-                  href="#"
+                  href="https://deitapecerica.educacao.sp.gov.br/"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Provão Paulista
+                  Site institucional
                 </a>
               </li>
             </ul>
@@ -100,14 +100,14 @@ const Footer = () => {
             <div className="space-y-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
-                <span>contato@deitapecerica.sp.gov.br</span>
+                <span>its.eec@educacao.sp.gov.br</span>
               </div>
             </div>
           </div>
         </div>
 
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© {currentYear} Diretoria de Ensino – Região de Itapecerica da Serra. Todos os direitos reservados.</p>
+          <p>© {currentYear} Unidade Regional de Ensino – Região de Itapecerica da Serra. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>

@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { createClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Award, ArrowRight } from "lucide-react";
 import PracticeCard from "@/components/PracticeCard";
-
-// 🔗 Supabase client
-const supabaseUrl = "https://tidqbfobizzbqwodgiel.supabase.co";
-const supabaseKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpZHFiZm9iaXp6YnF3b2RnaWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTM0NDYsImV4cCI6MjA3ODQyOTQ0Nn0.GLApVW55UFsrGHhRwvUyTsXyd5jNo_GSh4Kf3tkD1gM";
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const Highlights = () => {
   const [practices, setPractices] = useState<any[]>([]);
@@ -17,19 +10,20 @@ const Highlights = () => {
 
   useEffect(() => {
     const fetchHighlights = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("praticas")
-        .select("id, titulo, descricao, autor, escola, categoria, imagem_url, data_envio, destaque")
-        .eq("destaque", true)
-        .order("data_envio", { ascending: false });
+      try {
+        setLoading(true);
 
-      if (error) {
-        console.error("Erro ao carregar destaques:", error);
-      } else {
+        // 🔁 Agora busca pelo proxy local (funciona dentro da intragov!)
+        const response = await fetch("/api/praticas?destaque=true");
+        if (!response.ok) throw new Error("Erro ao buscar destaques");
+
+        const data = await response.json();
         setPractices(data || []);
+      } catch (error) {
+        console.error("Erro ao carregar destaques:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchHighlights();
@@ -43,9 +37,13 @@ const Highlights = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-accent to-accent/80 text-white mb-6">
             <Award className="h-8 w-8" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Destaques do Mês</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            Destaques do Mês
+          </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Práticas escolhidas pela equipe da <strong>URE Itapecerica da Serra</strong> que se destacaram pela inovação e impacto educacional.
+            Práticas escolhidas pela equipe da{" "}
+            <strong>URE Itapecerica da Serra</strong> que se destacaram pela
+            inovação e impacto educacional.
           </p>
         </div>
 

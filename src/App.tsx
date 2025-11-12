@@ -11,6 +11,8 @@ import Highlights from "./pages/Highlights";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import EnviarPratica from "./pages/EnviarPratica";
+import admin from "@/pages/admin";
+
 
 const queryClient = new QueryClient();
 

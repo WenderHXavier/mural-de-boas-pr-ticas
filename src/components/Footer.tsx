@@ -72,7 +72,7 @@ const Footer = () => {
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  SITE DA EQUIPE DE ESPECIALISTAS EM CURRÍCULO UREITS
+                  Site da Equipe de Especialistas em Currículo
                 </a>
               </li>
               <li>
@@ -80,7 +80,7 @@ const Footer = () => {
                   href="https://padlet.com/wellingtonsantos02/n-cleo-pedag-gico-npe-derits-2024-2025-aln1ejdxbztywah8"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  PADLET OFICIAL UREITS
+                  Padlet Oficial
                 </a>
               </li>
               <li>

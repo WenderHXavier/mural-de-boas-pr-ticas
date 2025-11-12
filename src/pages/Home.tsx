@@ -1,12 +1,38 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { createClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, Users, Lightbulb, Send } from "lucide-react";
 import PracticeCard from "@/components/PracticeCard";
-import { mockPractices } from "@/data/mockPractices";
+
+// 🔗 Supabase client
+const supabaseUrl = "https://tidqbfobizzbqwodgiel.supabase.co";
+const supabaseKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpZHFiZm9iaXp6YnF3b2RnaWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTM0NDYsImV4cCI6MjA3ODQyOTQ0Nn0.GLApVW55UFsrGHhRwvUyTsXyd5jNo_GSh4Kf3tkD1gM";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const Home = () => {
-  const recentPractices = mockPractices.slice(0, 3);
+  const [practices, setPractices] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      const { data, error } = await supabase
+        .from("praticas")
+        .select("id, titulo, descricao, escola, categoria, imagem_url, destaque")
+        .eq("destaque", true)
+        .order("data_envio", { ascending: false })
+        .limit(3);
+
+      if (error) {
+        console.error("Erro ao carregar destaques:", error);
+      } else {
+        setPractices(data || []);
+      }
+    };
+
+    fetchFeatured();
+  }, []);
 
   const features = [
     {
@@ -36,9 +62,13 @@ const Home = () => {
             <h1 className="text-4xl md:text-6xl font-bold leading-tight">
               Boas Práticas em Ação!
             </h1>
-            <p className="text-xl md:text-2xl text-white/90">
-              Conheça as iniciativas que estão transformando a educação nas escolas da <strong>URE Itapecerica da Serra</strong>
-            </p>
+            <p
+              className="text-xl md:text-2xl text-white/90"
+              dangerouslySetInnerHTML={{
+                __html:
+                  "Conheça as iniciativas que estão transformando a educação nas escolas da <strong>URE Itapecerica da Serra</strong> — inovação, colaboração e aprendizado em ação!",
+              }}
+            />
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Link to="/enviar-pratica">
                 <Button size="lg" variant="secondary" className="gap-2 text-lg px-8">
@@ -47,7 +77,11 @@ const Home = () => {
                 </Button>
               </Link>
               <Link to="/practices">
-                <Button size="lg" variant="outline" className="gap-2 text-lg px-8 bg-white/10 hover:bg-white/20 border-white/30 text-white">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="gap-2 text-lg px-8 bg-white/10 hover:bg-white/20 border-white/30 text-white"
+                >
                   Ver todas as práticas
                 </Button>
               </Link>
@@ -60,15 +94,21 @@ const Home = () => {
       <section className="py-16 md:py-24 bg-muted/30">
         <div className="container">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Por que compartilhar?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Por que compartilhar?
+            </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Faça parte de uma rede colaborativa que valoriza e multiplica boas ideias
+              Faça parte de uma rede colaborativa que valoriza e multiplica boas ideias.
             </p>
           </div>
-          
+
           <div className="grid gap-8 md:grid-cols-3">
             {features.map((feature, index) => (
-              <Card key={index} className="border-none shadow-lg animate-scale-in" style={{ animationDelay: `${index * 0.1}s` }}>
+              <Card
+                key={index}
+                className="border-none shadow-lg animate-scale-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
                 <CardContent className="pt-8 pb-8 text-center space-y-4">
                   <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary-light flex items-center justify-center">
                     <feature.icon className="h-8 w-8 text-white" />
@@ -82,31 +122,48 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Recent Practices Section */}
-      <section className="py-16 md:py-24">
+      {/* Destaques do Mês */}
+      <section className="py-16 md:py-24 bg-muted/20">
         <div className="container">
           <div className="flex items-center justify-between mb-12">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-2">Destaques Recentes</h2>
-              <p className="text-lg text-muted-foreground">Conheça as práticas que estão fazendo a diferença</p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-2">
+                Destaques do Mês
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                As práticas escolhidas pela equipe da{" "}
+                <strong>URE Itapecerica da Serra</strong> que estão inspirando toda a rede.
+              </p>
             </div>
-            <Link to="/practices" className="hidden md:block">
-              <Button variant="outline">Ver todas</Button>
+            <Link to="/highlights" className="hidden md:block">
+              <Button variant="outline">Ver todos os destaques</Button>
             </Link>
-          </div>
-          
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {recentPractices.map((practice, index) => (
-              <div key={practice.id} className="animate-scale-in" style={{ animationDelay: `${index * 0.1}s` }}>
-                <PracticeCard {...practice} />
-              </div>
-            ))}
           </div>
 
-          <div className="text-center mt-12 md:hidden">
-            <Link to="/practices">
-              <Button variant="outline" size="lg">Ver todas as práticas</Button>
-            </Link>
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {practices.length > 0 ? (
+              practices.map((practice, index) => (
+                <div
+                  key={practice.id}
+                  className="animate-scale-in"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <PracticeCard
+                    id={practice.id}
+                    title={practice.titulo}
+                    school={practice.escola}
+                    category={practice.categoria}
+                    description={practice.descricao}
+                    image={practice.imagem_url}
+                    featured={true}
+                  />
+                </div>
+              ))
+            ) : (
+              <p className="text-center text-muted-foreground col-span-full">
+                Nenhum destaque disponível no momento.
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -115,16 +172,18 @@ const Home = () => {
       <section className="py-16 md:py-24 bg-gradient-to-r from-primary to-primary-light text-white">
         <div className="container">
           <div className="mx-auto max-w-3xl text-center space-y-6">
-            <h2 className="text-3xl md:text-4xl font-bold">Sua escola tem uma história para contar?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold">
+              Sua escola tem uma história para contar?
+            </h2>
             <p className="text-xl text-white/90">
               Compartilhe suas iniciativas e inspire educadores de toda a região!
             </p>
-           <Link to="/enviar-pratica">
-            <Button size="lg" variant="secondary" className="gap-2 text-lg px-8">
-              <Send className="h-5 w-5" />
-              Enviar minha boa prática
-            </Button>
-          </Link>
+            <Link to="/enviar-pratica">
+              <Button size="lg" variant="secondary" className="gap-2 text-lg px-8">
+                <Send className="h-5 w-5" />
+                Enviar minha boa prática
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

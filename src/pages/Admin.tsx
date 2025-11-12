@@ -16,7 +16,7 @@ export default function Admin() {
   const [password, setPassword] = useState("");
   const [practices, setPractices] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [updating, setUpdating] = useState(false);
+  const [updating, setUpdating] = useState<string | null>(null);
 
   const PASSWORD = "ure2025";
 
@@ -48,23 +48,9 @@ export default function Admin() {
     if (authorized) fetchPractices();
   }, [authorized]);
 
-  // ⚙️ Funções de ação via proxy
-  const handleApprove = async (id: string, aprovado: boolean) => {
-    await sendAction(id, aprovado ? "reprovar" : "aprovar");
-  };
-
-  const handleHighlight = async (id: string, destaque: boolean) => {
-    await sendAction(id, destaque ? "removerDestaque" : "destaque");
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir esta prática?")) return;
-    await sendAction(id, "deletar");
-  };
-
-  // 📡 Função genérica para enviar ações
+  // 📡 Envia ação genérica
   const sendAction = async (id: string, action: string) => {
-    setUpdating(true);
+    setUpdating(id);
     try {
       const res = await fetch("/api/admin", {
         method: "POST",
@@ -72,13 +58,31 @@ export default function Admin() {
         body: JSON.stringify({ id, action }),
       });
 
-      if (!res.ok) throw new Error("Erro ao executar ação");
+      const result = await res.json();
+      console.log(`🛰️ Ação '${action}' resposta:`, result);
+
+      if (!res.ok) throw new Error(result.error || "Erro ao executar ação");
+
+      await new Promise((r) => setTimeout(r, 500)); // pequeno delay pra UX
       await fetchPractices();
     } catch (err) {
       console.error("❌ Erro ao enviar ação:", err);
       alert("Erro ao realizar a ação. Veja o console para detalhes.");
+    } finally {
+      setUpdating(null);
     }
-    setUpdating(false);
+  };
+
+  // ⚙️ Funções de ação via proxy
+  const handleApprove = (id: string, aprovado: boolean) =>
+    sendAction(id, aprovado ? "reprovar" : "aprovar");
+
+  const handleHighlight = (id: string, destaque: boolean) =>
+    sendAction(id, destaque ? "removerDestaque" : "destaque");
+
+  const handleDelete = (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir esta prática?")) return;
+    sendAction(id, "deletar");
   };
 
   // 🔐 Tela de login
@@ -160,9 +164,9 @@ export default function Admin() {
                         size="sm"
                         variant={p.aprovado ? "default" : "outline"}
                         onClick={() => handleApprove(p.id, p.aprovado)}
-                        disabled={updating}
+                        disabled={updating === p.id}
                       >
-                        {updating ? (
+                        {updating === p.id ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
                           <CheckCircle className="h-4 w-4" />
@@ -176,9 +180,9 @@ export default function Admin() {
                         size="sm"
                         variant={p.destaque ? "secondary" : "outline"}
                         onClick={() => handleHighlight(p.id, p.destaque)}
-                        disabled={updating}
+                        disabled={updating === p.id}
                       >
-                        {updating ? (
+                        {updating === p.id ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
                           <Star className="h-4 w-4" />
@@ -192,9 +196,9 @@ export default function Admin() {
                         size="sm"
                         variant="destructive"
                         onClick={() => handleDelete(p.id)}
-                        disabled={updating}
+                        disabled={updating === p.id}
                       >
-                        {updating ? (
+                        {updating === p.id ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
                           <Trash2 className="h-4 w-4" />

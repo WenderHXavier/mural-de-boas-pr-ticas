@@ -87,35 +87,35 @@ const About = () => {
             <h2 className="text-2xl font-bold mb-6 text-center">Recursos Úteis</h2>
             <div className="grid gap-4 md:grid-cols-2">
               <a
-                href="https://www.alura.com.br"
+                href="https://sites.google.com/view/tecnologiaderits/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-4 rounded-lg bg-background hover:bg-accent/10 transition-colors group"
               >
-                <span className="font-medium">Plataforma Alura</span>
+                <span className="font-medium">Materiais de Tecnologia e Robótica</span>
                 <span className="text-primary group-hover:translate-x-1 transition-transform">→</span>
               </a>
               <a
-                href="https://www.obmep.org.br"
+                href="https://sites.google.com/view/npe-derits/p%C3%A1gina-inicial?authuser=0"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-4 rounded-lg bg-background hover:bg-accent/10 transition-colors group"
               >
-                <span className="font-medium">OBMEP</span>
+                <span className="font-medium">Site da Equipe de Especialistas em Currículo</span>
                 <span className="text-primary group-hover:translate-x-1 transition-transform">→</span>
               </a>
               <a
-                href="#"
+                href="https://deitapecerica.educacao.sp.gov.br/"
                 className="flex items-center justify-between p-4 rounded-lg bg-background hover:bg-accent/10 transition-colors group"
               >
-                <span className="font-medium">Robótica Educacional</span>
+                <span className="font-medium">Site Institucional</span>
                 <span className="text-primary group-hover:translate-x-1 transition-transform">→</span>
               </a>
               <a
-                href="#"
+                href="https://sites.google.com/view/npe-derits/padlet?authuser=0"
                 className="flex items-center justify-between p-4 rounded-lg bg-background hover:bg-accent/10 transition-colors group"
               >
-                <span className="font-medium">Provão Paulista</span>
+                <span className="font-medium">Padlet</span>
                 <span className="text-primary group-hover:translate-x-1 transition-transform">→</span>
               </a>
             </div>
@@ -129,7 +129,7 @@ const About = () => {
           </p>
           <p>
             Para mais informações:{" "}
-            <a href="mailto:contato@deitapecerica.sp.gov.br" className="text-primary hover:underline">
+            <a href="mailto:its.eec@educacao.sp.gov.br" className="text-primary hover:underline">
               contato@deitapecerica.sp.gov.br
             </a>
           </p>

@@ -23,7 +23,7 @@ const Header = () => {
         <Link to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg overflow-hidden bg-white">
             <img
-              src="/logo-ure.png"   // <-- SÓ TROCAR AQUI SE O NOME FOR OUTRO
+              src="/logo-ure1.png"   // <-- SÓ TROCAR AQUI SE O NOME FOR OUTRO
               alt="Logo URE"
               className="w-full h-full object-contain"
             />

@@ -1,13 +1,12 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
-const SUPABASE_URL = "https://tidqbfobizzbqwodgiel.supabase.co";
-const SUPABASE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpZHFiZm9iaXp6YnF3b2RnaWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTM0NDYsImV4cCI6MjA3ODQyOTQ0Nn0.GLApVW55UFsrGHhRwvUyTsXyd5jNo_GSh4Kf3tkD1gM";
+const SUPABASE_URL = process.env.SUPABASE_URL!;
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST")
@@ -44,18 +43,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: "Ação desconhecida" });
     }
 
-    const options: RequestInit = {
+    const response = await fetch(url, {
       method,
       headers: {
+        apikey: SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
         "Content-Type": "application/json",
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
         Prefer: "return=representation",
       },
       body: updateData ? JSON.stringify(updateData) : undefined,
-    };
-
-    const response = await fetch(url, options);
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -66,7 +63,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const result = await response.json();
     console.log(`✅ Ação '${action}' aplicada no registro ${id}`, result);
 
-    return res.status(200).json({ success: true, action, result });
+    return res.status(200).json({ success: true, result });
   } catch (err: any) {
     console.error("⚠️ Erro interno:", err);
     return res.status(500).json({ error: "Erro interno do servidor", details: err.message });

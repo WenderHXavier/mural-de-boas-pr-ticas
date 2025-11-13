@@ -21,13 +21,14 @@ const Header = () => {
 
         {/* LOGO */}
         <Link to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg overflow-hidden bg-white">
+          <div className="flex items-center justify-center rounded-lg bg-white p-1 h-12 w-12 shadow-sm">
             <img
-              src="/logo-ure1.png"   // <-- SÓ TROCAR AQUI SE O NOME FOR OUTRO
+              src="/logo-ure1.png"
               alt="Logo URE"
-              className="w-full h-full object-contain"
+              className="max-w-full max-h-full object-contain"
             />
           </div>
+
           <div className="hidden md:block">
             <h1 className="text-lg font-bold leading-tight">Mural de Boas Práticas</h1>
             <p className="text-xs text-muted-foreground">URE Itapecerica da Serra</p>

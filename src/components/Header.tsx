@@ -29,10 +29,15 @@ const Header = () => {
             />
           </div>
 
-          <div className="hidden md:block">
-            <h1 className="text-lg font-bold leading-tight">Mural de Boas Práticas</h1>
-            <p className="text-xs text-muted-foreground">URE Itapecerica da Serra</p>
-          </div>
+         <div className="flex flex-col">
+          <h1 className="text-sm sm:text-base md:text-lg font-bold leading-tight">
+            Mural de Boas Práticas
+          </h1>
+          <p className="text-[10px] sm:text-xs text-muted-foreground">
+            URE Itapecerica da Serra
+          </p>
+        </div>
+
         </Link>
 
         {/* Desktop Navigation */}

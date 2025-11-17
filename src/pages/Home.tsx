@@ -4,21 +4,23 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, Users, Lightbulb, Send } from "lucide-react";
 import PracticeCard from "@/components/PracticeCard";
+import PracticeModal from "@/components/PracticeModal";
 
 const Home = () => {
   const [practices, setPractices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // 👉 Estado do Modal
+  const [modalPractice, setModalPractice] = useState<any | null>(null);
+
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
         setLoading(true);
-        // 🔁 Busca via proxy para funcionar na rede intragov
         const response = await fetch("/api/praticas?destaque=true");
         if (!response.ok) throw new Error("Erro ao buscar destaques");
-
         const data = await response.json();
-        // Exibe apenas os 3 primeiros
+
         setPractices(data.slice(0, 3) || []);
       } catch (error) {
         console.error("Erro ao carregar destaques:", error);
@@ -144,7 +146,8 @@ const Home = () => {
                 practices.map((practice, index) => (
                   <div
                     key={practice.id}
-                    className="animate-scale-in"
+                    onClick={() => setModalPractice(practice)} // 👈 ABRE O MODAL
+                    className="cursor-pointer animate-scale-in"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <PracticeCard
@@ -167,6 +170,21 @@ const Home = () => {
           )}
         </div>
       </section>
+
+      {/* Modal — fica no final do JSX */}
+      {modalPractice && (
+        <PracticeModal
+          practice={{
+            ...modalPractice,
+            title: modalPractice.titulo,
+            school: modalPractice.escola,
+            category: modalPractice.categoria,
+            description: modalPractice.descricao,
+            image: modalPractice.imagem_url,
+          }}
+          onClose={() => setModalPractice(null)}
+        />
+      )}
 
       {/* CTA Section */}
       <section className="py-16 md:py-24 bg-gradient-to-r from-primary to-primary-light text-white">

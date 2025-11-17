@@ -22,7 +22,8 @@ export default function PracticeModal({ practice, onClose }: PracticeModalProps)
           <img
             src={practice.image}
             alt={practice.title}
-            className="w-full h-80 object-cover"
+            className="w-full h-80 object-contain bg-black"
+
           />
         ) : (
           <div className="w-full h-80 bg-muted flex items-center justify-center text-muted-foreground">

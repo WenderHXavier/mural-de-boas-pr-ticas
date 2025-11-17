@@ -3,17 +3,19 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Award, ArrowRight } from "lucide-react";
 import PracticeCard from "@/components/PracticeCard";
+import PracticeModal from "@/components/PracticeModal";
 
 const Highlights = () => {
   const [practices, setPractices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // 👉 Controle do modal
+  const [modalPractice, setModalPractice] = useState<any | null>(null);
+
   useEffect(() => {
     const fetchHighlights = async () => {
       try {
         setLoading(true);
-
-        // 🔁 Agora busca pelo proxy local (funciona dentro da intragov!)
         const response = await fetch("/api/praticas?destaque=true");
         if (!response.ok) throw new Error("Erro ao buscar destaques");
 
@@ -41,20 +43,19 @@ const Highlights = () => {
             Destaques do Mês
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Práticas escolhidas pela equipe da{" "}
-            <strong>URE Itapecerica da Serra</strong> que se destacaram pela
-            inovação e impacto educacional.
+            Práticas que se destacaram pela inovação e impacto educacional.
           </p>
         </div>
 
-        {/* Featured Practices */}
+        {/* Grid dos Cards */}
         {!loading && practices.length > 0 ? (
           <>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-12">
               {practices.map((practice, index) => (
                 <div
                   key={practice.id}
-                  className="animate-scale-in"
+                  onClick={() => setModalPractice(practice)} // 👈 Abre Modal
+                  className="cursor-pointer animate-scale-in"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <PracticeCard
@@ -70,7 +71,7 @@ const Highlights = () => {
               ))}
             </div>
 
-            {/* CTA to see all practices */}
+            {/* CTA */}
             <div
               className="text-center bg-muted/50 rounded-2xl p-12 animate-fade-in"
               style={{ animationDelay: "0.3s" }}
@@ -79,8 +80,7 @@ const Highlights = () => {
                 Quer conhecer mais práticas?
               </h2>
               <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-                Explore todas as iniciativas compartilhadas pelas escolas da{" "}
-                <strong>URE Itapecerica da Serra</strong>.
+                Explore toda a galeria das escolas participantes.
               </p>
               <Link to="/practices">
                 <Button size="lg" className="gap-2">
@@ -93,7 +93,7 @@ const Highlights = () => {
         ) : !loading ? (
           <div className="text-center py-16">
             <p className="text-lg text-muted-foreground mb-6">
-              Nenhum destaque do mês foi definido ainda.
+              Nenhum destaque definido ainda.
             </p>
             <Link to="/practices">
               <Button variant="outline">Ver todas as práticas</Button>
@@ -103,6 +103,21 @@ const Highlights = () => {
           <p className="text-center text-muted-foreground">Carregando...</p>
         )}
       </div>
+
+      {/* Modal */}
+      {modalPractice && (
+        <PracticeModal
+          practice={{
+            ...modalPractice,
+            title: modalPractice.titulo,
+            school: modalPractice.escola,
+            category: modalPractice.categoria,
+            description: modalPractice.descricao,
+            image: modalPractice.imagem_url,
+          }}
+          onClose={() => setModalPractice(null)}
+        />
+      )}
     </div>
   );
 };

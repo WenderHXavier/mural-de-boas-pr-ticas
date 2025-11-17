@@ -8,27 +8,49 @@ interface PracticeModalProps {
 export default function PracticeModal({ practice, onClose }: PracticeModalProps) {
   if (!practice) return null;
 
+    const [isVertical, setIsVertical] = useState(false);
+  
+  useEffect(() => {
+    if (!practice?.image) return;
+  
+    const img = new Image();
+    img.src = practice.image;
+    img.onload = () => {
+      setIsVertical(img.height > img.width);
+    };
+  }, [practice]);
+
+
   return (
     <div
       className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-6 animate-fade-in"
       onClick={onClose}
     >
-      <div
-        className="bg-white max-w-4xl w-full rounded-2xl overflow-hidden shadow-2xl animate-scale-in"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Imagem grande como destaque */}
-        {practice.image ? (
+    <div
+      className="bg-white max-w-4xl w-full rounded-2xl overflow-hidden shadow-2xl animate-scale-in"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Imagem grande como destaque */}
+      {practice.image ? (
+        <div className="flex justify-center bg-black">
           <img
             src={practice.image}
             alt={practice.title}
-            className="w-full h-80 object-contain bg-black"
+            className={`transition-all duration-500
+              ${
+                isVertical
+                  ? "max-h-[85vh] w-auto object-contain"
+                  : "w-full max-h-[60vh] object-cover"
+              }
+            `}
           />
-        ) : (
-          <div className="w-full h-80 bg-muted flex items-center justify-center text-muted-foreground">
-            Sem imagem
-          </div>
-        )}
+        </div>
+      ) : (
+        <div className="w-full h-80 bg-muted flex items-center justify-center text-muted-foreground">
+          Sem imagem
+        </div>
+      )}
+    
 
         {/* Conteúdo */}
         <div className="p-8 space-y-6">
